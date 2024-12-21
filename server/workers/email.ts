@@ -21,6 +21,7 @@ async function emailWorkerProcess(job: Job<EmailJobData>) {
       return subscribeSuccessEmail;
     }
     case MAGIC_LINK: {
+      logger.info(emailArgs);
       const magicLinkEmail = await renderMagicLinkEmail(emailArgs);
       return magicLinkEmail;
     }

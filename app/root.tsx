@@ -15,6 +15,8 @@ import { Route } from '@react-router-root-types/root';
 
 import i18next from '~/lib/i18next.server';
 
+import { Toaster } from '~/components/ui/sonner';
+
 import styles from './globals.css?url';
 
 export const handle = {
@@ -57,6 +59,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <Toaster position="top-right" />
         <ScrollRestoration />
         <Scripts />
       </body>
