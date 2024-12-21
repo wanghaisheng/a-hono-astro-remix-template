@@ -8,6 +8,7 @@ import {
   useLoaderData,
 } from 'react-router';
 import { toast } from 'sonner';
+import { Trans, useTranslation } from 'react-i18next';
 
 import { Route } from '@react-router-route-types/signin';
 
@@ -19,7 +20,6 @@ import { email } from '@/queues/email';
 import i18n from '~/lib/i18next.server';
 
 import { UserAuthForm } from '~/components/UserAuthForm';
-import { Trans, useTranslation } from 'react-i18next';
 
 export const meta = ({ data }: Route.MetaArgs) => {
   return [
@@ -80,7 +80,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
 };
 
 export function SignInPageContent() {
-  const { locale } = useLoaderData<typeof loader>();
+  const { locale, callbackUrl } = useLoaderData<typeof loader>();
   const { t } = useTranslation('translation', { lng: locale });
 
   return (

@@ -48,12 +48,6 @@ export function UserAuthForm({
   const fetcher = useFetcher<{ emailTo?: string }>();
 
   useEffect(() => {
-    console.log(fetcher.state);
-  }, [fetcher.state]);
-
-  useEffect(() => {
-    console.log(fetcher.data);
-
     if (fetcher.data?.emailTo) {
       toast(t('magic_link_sent'));
     }

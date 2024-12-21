@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-import { apiClient } from './api';
+import { apiClient } from '~/lib/api';
 
 export function useUser(id: string) {
   return useQuery({
