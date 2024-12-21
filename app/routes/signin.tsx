@@ -1,21 +1,36 @@
-import { data, useLoaderData } from 'react-router';
+import { useEffect } from 'react';
+import {
+  data,
+  useRouteError,
+  isRouteErrorResponse,
+  Link,
+  redirect,
+  useLoaderData,
+} from 'react-router';
+import { toast } from 'sonner';
 
 import { Route } from '@react-router-route-types/signin';
 
-import { Button } from '~/components/ui/button';
-import { GitHubIcon } from '~/components/icons/github';
-import { AppleIcon } from '~/components/icons/apple';
-
+import { MAGIC_LINK } from '@/types/email';
+import { APP_URL } from '@/config/server';
+import { createMagicToken } from '@/utils/magic-link';
 import { createCallbackUrlCookie } from '@/lib/auth';
+import { email } from '@/queues/email';
+import i18n from '~/lib/i18next.server';
+
+import { UserAuthForm } from '~/components/UserAuthForm';
+import { Trans, useTranslation } from 'react-i18next';
 
 export const meta = () => {
-  return [
-    { title: 'Sign in' },
-    { name: 'description', content: 'Remix Express Template' },
-  ];
+  return [{ title: 'Sign in' }, { name: 'description', content: 'Sign in' }];
 };
 
 export const loader = async ({ request, context }: Route.LoaderArgs) => {
+  if (context.session) {
+    throw redirect('/dashboard');
+  }
+
+  const locale = await i18n.getLocale(request);
   const { searchParams } = new URL(request.url);
   const callbackUrl = searchParams.get('callbackUrl') ?? '/dashboard';
 
@@ -24,6 +39,7 @@ export const loader = async ({ request, context }: Route.LoaderArgs) => {
   return data(
     {
       callbackUrl,
+      locale,
     },
     {
       headers: {
@@ -33,25 +49,98 @@ export const loader = async ({ request, context }: Route.LoaderArgs) => {
   );
 };
 
-export default function SignInPage() {
-  const { callbackUrl } = useLoaderData<typeof loader>();
+export const action = async ({ request }: Route.ActionArgs) => {
+  const formData = await request.formData();
+  const emailTo = formData.get('email') as string | null;
+
+  if (!emailTo) {
+    return data({ error: 'email is required' }, { status: 400 });
+  }
+
+  try {
+    const token = await createMagicToken(emailTo);
+    await email({
+      emailType: MAGIC_LINK,
+      emailTo,
+      emailArgs: {
+        link: `${APP_URL}/api/auth/magic-link/${token}`,
+      },
+    });
+
+    return { emailTo };
+  } catch (err: any) {
+    throw data(err.message, { status: 500 });
+  }
+};
+
+export function SignInPageContent() {
+  const { locale } = useLoaderData<typeof loader>();
+  const { t } = useTranslation('translation', { lng: locale });
 
   return (
-    <div className="m-4">
-      <h2 className="text-xl font-bold my-2">Login</h2>
-      <Button asChild>
-        <a href="/api/auth/github/login">
-          <GitHubIcon className="mr-2 h-4 w-4" />
-          通过GitHub登录
-        </a>
-      </Button>
-      <p>或</p>
-      <Button asChild>
-        <a href="/api/auth/apple/login">
-          <AppleIcon className="mr-2 h-4 w-4" />
-          Sign in with Apple
-        </a>
-      </Button>
+    <div className="min-h-screen">
+      <div className="container flex h-screen w-screen flex-col items-center justify-center">
+        <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+          <div className="flex flex-col space-y-2 text-center">
+            {/* <Icons.logo className="mx-auto h-6 w-6" /> */}
+            <h1 className="text-2xl font-semibold tracking-tight">
+              {t('greeting')}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {t('signin_prompt')}
+            </p>
+          </div>
+          <UserAuthForm locale={locale} />
+          <p className="px-8 text-center text-sm text-muted-foreground">
+            <Trans
+              t={t}
+              i18nKey="signin_agreement"
+              components={{
+                terms: (
+                  <Link
+                    reloadDocument
+                    to="/terms"
+                    className="hover:text-brand underline underline-offset-4"
+                  >
+                    {t('terms')}
+                  </Link>
+                ),
+                privacy: (
+                  <Link
+                    reloadDocument
+                    to="/privacy"
+                    className="hover:text-brand underline underline-offset-4"
+                  >
+                    {t('privacy')}
+                  </Link>
+                ),
+              }}
+            />
+          </p>
+        </div>
+      </div>
     </div>
   );
+}
+
+export function ErrorBoundary() {
+  const { locale } = useLoaderData<typeof loader>();
+  const { t } = useTranslation('translation', { lng: locale });
+  const error = useRouteError();
+
+  useEffect(() => {
+    if (isRouteErrorResponse(error)) {
+      toast(error.data);
+    }
+
+    if (error instanceof Error) {
+      toast(t('error_occurred'));
+    }
+  }, [error]);
+
+  return <SignInPageContent />;
+}
+
+export default function SignInPage() {
+  return <SignInPageContent />;
 }
