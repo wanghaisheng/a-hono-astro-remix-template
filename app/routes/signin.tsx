@@ -21,8 +21,11 @@ import i18n from '~/lib/i18next.server';
 import { UserAuthForm } from '~/components/UserAuthForm';
 import { Trans, useTranslation } from 'react-i18next';
 
-export const meta = () => {
-  return [{ title: 'Sign in' }, { name: 'description', content: 'Sign in' }];
+export const meta = ({ data }: Route.MetaArgs) => {
+  return [
+    { title: data.title },
+    { name: 'description', content: data.description },
+  ];
 };
 
 export const loader = async ({ request, context }: Route.LoaderArgs) => {
@@ -31,6 +34,7 @@ export const loader = async ({ request, context }: Route.LoaderArgs) => {
   }
 
   const locale = await i18n.getLocale(request);
+  const t = await i18n.getFixedT(request);
   const { searchParams } = new URL(request.url);
   const callbackUrl = searchParams.get('callbackUrl') ?? '/dashboard';
 
@@ -40,6 +44,8 @@ export const loader = async ({ request, context }: Route.LoaderArgs) => {
     {
       callbackUrl,
       locale,
+      title: `${t('signin')} - ${t('title')}`,
+      description: t('description'),
     },
     {
       headers: {
