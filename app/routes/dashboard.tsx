@@ -6,16 +6,9 @@ import i18n from '~/lib/i18next.server';
 import { validateSession } from '~/lib/session.server';
 
 import { SidebarProvider, SidebarTrigger } from '~/components/ui/sidebar';
-import { AppSidebar } from '~/components/sidebar/AppSidebar';
 import { Separator } from '~/components/ui/separator';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '~/components/ui/breadcrumb';
+import { AppSidebar } from '~/components/sidebar/AppSidebar';
+import { DashboardBreadcrumb } from '~/components/DashboardBreadcrumb';
 
 export const meta = ({ data }: Route.MetaArgs) => {
   return [
@@ -50,19 +43,7 @@ export default function Dashboard() {
           <div className="flex items-center gap-2 px-4">
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
-              <BreadcrumbList>
-                {/* <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" /> */}
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Dashboard</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
+            <DashboardBreadcrumb />
           </div>
         </header>
         <Outlet />

@@ -72,3 +72,17 @@ export const sessionTable = pgTable('session', {
 });
 
 export type Session = InferSelectModel<typeof sessionTable>;
+
+export const subscriptionTable = pgTable('subscription', {
+  id: varchar('id').primaryKey().notNull(),
+  userId: text('user_id')
+    .notNull()
+    .references(() => userTable.id),
+  customerId: text('customer_id').notNull(),
+  status: text('status').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' })
+    .defaultNow()
+    .notNull(),
+});
+
+export type Subscription = InferSelectModel<typeof subscriptionTable>;

@@ -1,5 +1,8 @@
 import { defineCollection, z } from 'astro:content';
 import { glob, file } from 'astro/loaders';
+import { docsSchema } from '@astrojs/starlight/schema';
+
+import { docsLoader } from '@site/utils/docs-loader';
 
 const postCollection = (name: string) =>
   defineCollection({
@@ -30,4 +33,5 @@ export const collections = {
   'blog-en': postCollection('blog-en'),
   'blog-zh': postCollection('blog-zh'),
   translations: translationsCollection,
+  docs: defineCollection({ loader: docsLoader(), schema: docsSchema() }),
 };

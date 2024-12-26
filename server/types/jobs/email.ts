@@ -7,6 +7,7 @@ export const EMAIL = 'email';
 export const emailJobDataSchema = z.object({
   emailType: z.enum([SUBSCRIBE_SUCCESS, MAGIC_LINK]),
   emailTo: z.string(),
+  emailFrom: z.string().optional(),
   emailArgs: z.any(),
 });
 

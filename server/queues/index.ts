@@ -4,11 +4,14 @@ import { serveStatic } from '@hono/node-server/serve-static';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter.js';
 
 import { emailQueue } from './email';
+import { stripeWebhookQueue } from './stripe-webhook';
 
 export const bullboardServerAdapter = new HonoAdapter(serveStatic);
 bullboardServerAdapter.setBasePath('/ctrls');
 
-const queues = [emailQueue].map((queue) => new BullMQAdapter(queue));
+const queues = [emailQueue, stripeWebhookQueue].map(
+  (queue) => new BullMQAdapter(queue),
+);
 
 createBullBoard({
   serverAdapter: bullboardServerAdapter,
