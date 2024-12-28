@@ -6,28 +6,35 @@ This is a boilerplate for building web applications with [Remix](https://remix.r
 
 - Server side tech stack:
   - [x] Hono (for server)
+    - [ ] Hono OpenAPI generator
   - [x] TypeScript
   - [x] Postgres
   - [x] DrizzleORM (to operate Postgres)
   - [x] Redis
   - [x] BullMQ (via Redis)
-    - [ ] Dashboard (via bull-board)
+    - [x] Dashboard (via bull-board)
   - [x] Minio
   - [x] Auth (via Lucia)
   - [x] Stripe
+    - [x]
   - [ ] Emails (via Resend / Nodemailer)
     - [x] Magic Link / OTP
+    - [x] Welcome Email after Subscription
 - Client side tech stack:
   - [x] TailwindCSS
   - [x] shadcn/ui
   - [x] react-router v7 (aka Remix v3, for app)
   - [x] Astro (for static content)
-    - [ ] Landing Page
+    - [x] Landing Page
       - [x] Hero
-      - [ ] Features
-      - [ ] Pricing
+      - [x] Features
+      - [x] Pricing
     - [x] Blog
-    - [ ] Docs (via Starlight)
+    - [x] Docs (via Starlight)
+    - [ ] SEO features
+      - [ ] Sitemap
+      - [ ] RSS
+      - [ ] OpenGraph
 - Build system
   - [x] Vite
   - [x] BiomeJS (for linting and formatting)
